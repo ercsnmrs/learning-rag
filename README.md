@@ -210,6 +210,137 @@ LangChain helps implement RAG by providing modular building blocks.
 
 ---
 
+## 3. Advanced RAG Techniques
+
+As you move beyond basic RAG, the focus shifts from “making retrieval work” to making it **reliable, precise, and scalable**. Advanced RAG techniques improve retrieval quality, reduce hallucinations, handle complex questions, and support specialized data types (like images, tables, or multiple document granularities).
+
+---
+
+### Key Components
+
+- **Hybrid Retrieval (Dense + Sparse)**  
+  Combines vector search (semantic similarity) with keyword search (BM25/lexical).  
+  Helpful when queries include exact tokens like IDs, error codes, filenames, or proper nouns.
+
+- **Multi-Step Retrieval (Coarse-to-Fine)**  
+  Uses stages to improve scalability and relevance: retrieve broadly first, then refine.  
+  Common pattern: **document/section retrieval → chunk retrieval → reranking**.
+
+- **Reranking (Second-Stage Retrieval)**  
+  After retrieving candidates (e.g., top-20), rerank them using stronger relevance signals.  
+  Improves precision of the final **top-k chunks** used in the prompt.
+
+- **Filtering (Noise Reduction + Control)**  
+  Exclude irrelevant or low-quality content before/after retrieval.  
+  Often uses content rules (duplicates/boilerplate), metadata constraints (date/source), or user scope.
+
+- **Hierarchical Retrieval**  
+  Retrieve at multiple granularities: document → section → chunk.  
+  Reduces noise in long documents and improves context targeting.
+
+- **Multi-Vector Retrieval**  
+  Store multiple embeddings per unit (chunk/doc) to represent different views: content, title, summary, entities, or Q&A pairs.  
+  Improves recall across different query styles.
+
+- **Contextual / Query-Aware Retrieval**  
+  Rewrite or expand the query using synonyms, related concepts, or intent-aware rewriting to improve retrieval matches.
+
+- **Knowledge-Enhanced Retrieval**  
+  Use structured knowledge like entity linking, taxonomies, or knowledge graphs to connect related concepts and reduce ambiguity.
+
+- **Cross-Modal Retrieval**  
+  Retrieve across modalities (text ↔ image ↔ audio).  
+  Useful for diagrams, screenshots, tables-as-images, and mixed-media knowledge bases.
+
+- **Active Learning (User Feedback Loop)**  
+  Use user feedback (clicks, ratings, corrections) to improve chunking, retrieval, reranking, and prompting over time.
+  
+---
+
+### Text Splitting and Chunking Strategies
+
+Chunking strongly affects retrieval quality—if the chunk boundaries are wrong, even the best embedding model may retrieve the wrong context.
+
+- **Importance of Text Splitting**  
+  Splitting controls what becomes “retrievable.” If key facts are split apart, retrieval may miss them or return incomplete context.
+
+- **Context Preservation**  
+  Use overlap, structure-aware splitting (headings/sections), and sentence/paragraph boundaries to keep meaning intact.
+
+- **Impact on Retrieval Accuracy**  
+  Good chunking improves both:
+  - **Recall:** ability to find relevant information
+  - **Precision:** reducing irrelevant results in top-k
+
+---
+
+### Balancing Chunk Size with Semantic Coherence
+
+Chunking is a tradeoff between speed, cost, and answer quality.
+
+- **Chunk Size**
+  - **Smaller chunks** → faster retrieval and more precise matches, but may lose necessary context.
+  - **Larger chunks** → better context and coherence, but may include irrelevant text and waste tokens.
+
+- **Semantic Coherence**
+  The goal is to make each chunk represent a *complete idea*.  
+  A good chunk usually contains enough context to answer a question without relying on neighboring chunks.
+
+---
+
+### Techniques for Improving Retrieval Accuracy
+
+- **Synonym Expansion**  
+  Expand queries with synonyms or alternate terms.  
+  Example: “refund” → “reimbursement”, “chargeback”, “return”.
+
+- **Concept Expansion**  
+  Add related concepts that often appear with the same intent.  
+  Example: “reset password” → “account recovery”, “2FA”, “email verification”.
+
+- **Query Reformulation (Query Rewriting)**  
+  Rewrite the user query to be more searchable and retrieval-friendly.  
+  Example: “Why can’t I log in?” → “login error troubleshooting steps and common causes”.
+
+> Tip: Many production systems use a combination: **hybrid retrieval + reranking + good chunking** before trying more complex solutions.
+
+---
+
+### Reranking and Filtering Retrieved Documents
+
+- **Reranking**  
+  Reorders retrieved results using additional signals to improve relevance (often applied after retrieving top-k or top-n candidates).
+
+  Common reranking approaches:
+  - **Contextual Reranking:** uses the query + candidate chunk together to judge relevance more accurately.
+  - **Model-Based Reranking:** uses ML models (e.g., cross-encoders, LLM rerankers) to score and reorder results.
+  - **Feedback-Based Ranking:** adapts ranking based on user feedback (clicks, upvotes/downvotes, corrections).
+
+- **Filtering**  
+  Excludes irrelevant, low-quality, or out-of-scope data before or after retrieval to reduce noise and improve answer quality.
+
+  Common filtering approaches:
+  - **Content-Based Filtering:** remove boilerplate, short/empty chunks, duplicates, or low-information text.
+  - **Metadata Filtering:** filter by source, date, department, doc type, language, access level, etc.
+  - **User-Preference Filtering:** personalize results based on role, history, or user-selected scope.
+
+---
+
+### Multi-Step Retrieval
+
+- **Coarse-to-Fine Retrieval Strategies**  
+  An initial broad search (**coarse**) is followed by refined retrieval (**fine**) to handle large datasets efficiently.
+
+  How it works:
+  1. **Coarse stage:** retrieve high-level candidates (documents/sections) quickly.
+  2. **Fine stage:** search within those candidates using smaller chunks, better reranking, or stricter filters.
+
+  Advantages:
+  - **Scalability:** reduces compute by narrowing the search space early.
+  - **Accuracy:** later stages apply deeper analysis (reranking, better chunk matching) to improve relevance.
+
+---
+
 ## Suggested next additions
 - A “Mini Projects” section (e.g., PDF Q&A, website FAQ bot, internal docs assistant)
 - A “Metrics” section (precision@k, recall@k, answer faithfulness, citation accuracy)
