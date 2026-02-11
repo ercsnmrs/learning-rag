@@ -341,7 +341,35 @@ Chunking is a tradeoff between speed, cost, and answer quality.
 
 ---
 
+## 4. Caching Responses Module
+
+The `5_caching_responses_rag` folder now follows a step-by-step learning structure:
+
+- `5_caching_responses_rag/a_in_memory/with_openai.py`: in-memory query cache (single-process demo)
+- `5_caching_responses_rag/b_postgres/with_openai.py`: persistent query cache in PostgreSQL
+- `5_caching_responses_rag/c_redis/with_openai.py`: fast query cache in Redis (optional TTL)
+
+Module guide:
+
+- `5_caching_responses_rag/README.md`
+
+Why this matters:
+
+- Reduces repeated LLM cost for identical query + retrieved context
+- Improves response latency for repeated questions
+- Shows tradeoffs between local memory, durable SQL cache, and low-latency key-value cache
+
+---
+
 ## Suggested next additions
 - A “Mini Projects” section (e.g., PDF Q&A, website FAQ bot, internal docs assistant)
 - A “Metrics” section (precision@k, recall@k, answer faithfulness, citation accuracy)
 - A “RAG patterns” section (multi-query, reranking, hybrid search, graph RAG)
+
+## References
+  SQL Agent
+    - https://docs.langchain.com/oss/python/langchain/sql-agent
+    - https://docs.langchain.com/oss/python/langchain/rag
+  Caching Response:
+    - https://aws.amazon.com/blogs/database/optimize-llm-response-costs-and-latency-with-effective-caching/
+    - https://colab.research.google.com/github/sugarforever/LangChain-Tutorials/blob/main/LangChain_Caching.ipynb

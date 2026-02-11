@@ -157,3 +157,5 @@ yarl
 fitz
 pytesseract
 pymupdf
+redis
+psycopg[binary]
